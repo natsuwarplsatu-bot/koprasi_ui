@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'barang_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +26,7 @@ class KoperasiPage extends StatelessWidget {
       'nama': 'Buku Tulis',
       'anggota': 3000,
       'umum': 3500,
-      'stok': 40,
+      'stok': 0,
     },
     {
       'nama': 'Pulpen',
@@ -90,24 +91,24 @@ class KoperasiPage extends StatelessWidget {
         title: const Text('Koperasi Sekolah'),
       ),
 
-      body: ListView.builder(
-        itemCount: daftarBarang.length,
-        itemBuilder: (context, index) {
-          final barang = daftarBarang[index];
+      body: Builder(
+        builder: (context) {
+          final barangTersedia = daftarBarang
+                .where((barang) => barang['stok'] > 0)
+                .toList();
+          return ListView.builder(
+            itemCount: barangTersedia.length,
+            itemBuilder: (context, index) {
+                final barang = barangTersedia[index];
 
-          return Card(
-            margin: const EdgeInsets.all(8),
-            child: ListTile(
-              leading: const Icon(Icons.inventory_2),
-              title: Text(barang['nama']),
-              subtitle: Text(
-                'Anggota Rp ${barang['anggota']} | '
-                'Umum Rp ${barang['umum']}',
-              ),
-              trailing: Text(
-                'Stok ${barang['stok']}',
-              ),
-            ),
+          return BarangCard(
+            nama: barang['nama'],
+            hargaAnggota: barang['anggota'],
+            stok: barang['stok'],
+            kategori: 'Alat Tulis',
+            sorot: true,
+          );
+        },
           );
         },
       ),
