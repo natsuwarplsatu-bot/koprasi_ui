@@ -10,16 +10,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const KoperasiPage(),
+      home: KoperasiPage(),
     );
   }
 }
 
-class KoperasiPage extends StatelessWidget {
+class KoperasiPage extends StatefulWidget {
   const KoperasiPage({super.key});
 
+  @override
+  State<KoperasiPage> createState() => _KoperasiPageState();
+}
+
+class _KoperasiPageState extends State<KoperasiPage> {
   // Data barang koperasi
   final List<Map<String, dynamic>> daftarBarang = const [
     {
@@ -53,64 +58,111 @@ class KoperasiPage extends StatelessWidget {
       'stok': 20,
     },
     {
-      'nama' : 'Penggaris',
-      'anggota' : 6000,
-      'umum' : 7000,
-      'stok' : 12,
+      'nama': 'Penggaris',
+      'anggota': 6000,
+      'umum': 7000,
+      'stok': 12,
     },
     {
-      'nama' : 'Spidol',  
-      'anggota' : 6000,
-      'umum' : 5000,
-      'stok' : 17,
+      'nama': 'Spidol',
+      'anggota': 6000,
+      'umum': 5000,
+      'stok': 17,
     },
     {
-      'nama' : 'Lem Kertas',
-      'anggota' : 4000,
-      'umum' : 4500,
-      'stok' : 10,
+      'nama': 'Lem Kertas',
+      'anggota': 4000,
+      'umum': 4500,
+      'stok': 10,
     },
     {
-      'nama' : 'Biskuit',
-      'anggota' : 5500,
-      'umum' : 6000,
-      'stok' : 17,
+      'nama': 'Biskuit',
+      'anggota': 5500,
+      'umum': 6000,
+      'stok': 17,
     },
     {
-      'nama' : 'Susu Kotak',
-      'anggota' : 4500, 
-      'umum' : 5000,
-      'stok' : 22,
+      'nama': 'Susu Kotak',
+      'anggota': 4500,
+      'umum': 5000,
+      'stok': 22,
     },
   ];
 
+  late TextEditingController _controller;
+  String kataCari = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasilCari = daftarBarang
+        .where((b) => b['nama'].toString().toLowerCase().contains(kataCari))
+        .toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Koperasi Sekolah'),
       ),
+      body: Column(
+        children: [
+          TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              hintText: 'Cari barang...',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (nilai) {
+              setState(() {
+                kataCari = nilai.toLowerCase();
+              });
+            },
+          ),
+          Text("Lebar Layar: " + MediaQuery.of(context).size.width.toString()),
+         Expanded(
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      int kolom;
 
-      body: Builder(
-        builder: (context) {
-          final barangTersedia = daftarBarang
-                .where((barang) => barang['stok'] > 0)
-                .toList();
-          return ListView.builder(
-            itemCount: barangTersedia.length,
-            itemBuilder: (context, index) {
-                final barang = barangTersedia[index];
+      if (constraints.maxWidth < 600) {
+        kolom = 1;
+      } else if (constraints.maxWidth < 900) {
+        kolom = 2;
+      } else {
+        kolom = 3;
+      }
+
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: kolom,
+          childAspectRatio: 3,
+        ),
+        itemCount: hasilCari.length,
+        itemBuilder: (context, index) {
+          final barang = hasilCari[index];
 
           return BarangCard(
             nama: barang['nama'],
             hargaAnggota: barang['anggota'],
             stok: barang['stok'],
-            kategori: 'Alat Tulis',
-            sorot: true,
+            kategori: '',
           );
         },
-          );
-        },
+      );
+    },
+  ),
+),
+        ],
       ),
     );
   }
