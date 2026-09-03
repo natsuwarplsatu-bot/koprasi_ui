@@ -28,7 +28,7 @@ class _KoperasiPageState extends State<KoperasiPage> {
   // Data barang koperasi
   final List<Map<String, dynamic>> daftarBarang = const [
     {
-      'nama': 'Buku Tulis',
+      'nama': 'Buku Tulis Bergaris 58 Lembar Sampul Tebal',
       'anggota': 3000,
       'umum': 3500,
       'stok': 0,
